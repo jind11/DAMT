@@ -38,8 +38,8 @@ if [ "$SRC" \> "$TGT" ]; then echo "please ensure SRC < TGT"; exit; fi
 MAIN_PATH=$PWD
 DATA_PATH=/data/medg/misc/jindi/nlp/datasets/OPUS/$SRC-$TGT/$SRC_DATA_NAME
 PROC_PATH=$DATA_PATH/processed/$SRC-$TGT
-BACK_DATA_DIR=$DATA_PATH/${TRAIN_TYPE}_back_translate/$SRC_MODEL_NAME
-BACK_PLUS_DATA_DIR=$DATA_PATH/${TRAIN_TYPE}_back_translate/$SRC_MODEL_NAME\_plus
+BACK_DATA_DIR=$DATA_PATH/sup_${TRAIN_TYPE}_translate/$SRC_MODEL_NAME
+BACK_PLUS_DATA_DIR=$DATA_PATH/sup_${TRAIN_TYPE}_translate/$SRC_MODEL_NAME\_plus
 FULL_VOCAB=$PROC_PATH/vocab.$SRC-$TGT
 
 $MAIN_PATH/preprocess.py $FULL_VOCAB $BACK_DATA_DIR/train.$SRC-$TGT.$SRC

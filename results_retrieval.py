@@ -25,4 +25,6 @@ with open(os.path.join(folder_name, 'train.log')) as ifile:
 assert len(valid_scores) == len(test_scores)
 
 idx_max = np.argmax(valid_scores)
-print(folder_name.split('/')[0], max(valid_scores), test_scores[idx_max], max(test_scores))
+print('best valid score: ', max(valid_scores),
+      'test score corresponding to best valid: ', test_scores[idx_max],
+      'best test score: ', max(test_scores))

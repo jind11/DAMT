@@ -39,17 +39,20 @@ else
     ORDERED_TGT=$SRC
 fi
 
-epoch_size=$(cat /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$TGT_DATA_NAME/${TRAIN_TYPE}_back_translate/$SRC_DATA_NAME/train.$ORDERED_SRC-$ORDERED_TGT.$SRC | wc -l)
+epoch_size=$(cat /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$TGT_DATA_NAME/sup_${TRAIN_TYPE}_translate/$SRC_DATA_NAME/train.$ORDERED_SRC-$ORDERED_TGT.$SRC | wc -l)
 max_epoch_size=300000
 epoch_size=$((epoch_size>max_epoch_size ?  max_epoch_size : epoch_size))
 echo $epoch_size
 
+pretrained_model_dir=/data/medg/misc/jindi/nlp/embeddings/XLM
+data_dir=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT
+
 python -W ignore train.py \
     --exp_name ${TRAIN_TYPE}_back_src_$SRC_DATA_NAME\_tgt_$TGT_DATA_NAME\_$SRC\_$TGT \
     --dump_path ./tmp/ \
-    --reload_model /data/medg/misc/jindi/nlp/embeddings/XLM/mlm_en${OTHER_LANG}_1024.pth,/data/medg/misc/jindi/nlp/embeddings/XLM/mlm_en${OTHER_LANG}_1024.pth \
-    --data_path /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$TGT_DATA_NAME/processed/$ORDERED_SRC-$ORDERED_TGT \
-    --para_data_path /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$TGT_DATA_NAME/${TRAIN_TYPE}_back_translate/$SRC_DATA_NAME \
+    --reload_model ${pretrained_model_dir}/mlm_en${OTHER_LANG}_1024.pth,${pretrained_model_dir}/mlm_en${OTHER_LANG}_1024.pth \
+    --data_path ${data_dir}/$TGT_DATA_NAME/processed/$ORDERED_SRC-$ORDERED_TGT \
+    --para_data_path ${data_dir}/$TGT_DATA_NAME/sup_${TRAIN_TYPE}_translate/$SRC_DATA_NAME \
     --lgs $SRC-$TGT \
     --mt_steps $SRC-$TGT \
     --encoder_only false \
@@ -65,7 +68,7 @@ python -W ignore train.py \
     --optimizer adam_inverse_sqrt,beta1=0.9,beta2=0.98,lr=0.0001 \
     --epoch_size $epoch_size \
     --eval_bleu true \
-    --stopping_criterion valid_$SRC-$TGT\_mt_bleu,2 \
+    --stopping_criterion valid_$SRC-$TGT\_mt_bleu,3 \
     --validation_metrics valid_$SRC-$TGT\_mt_bleu \
-    --max_epoch 50 \
+    --max_epoch 100 \
     --max_len 150 \

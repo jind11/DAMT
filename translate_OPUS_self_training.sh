@@ -33,12 +33,12 @@ else
 fi
 
 SRC_DIR=/data/medg/misc/jindi/nlp/model_results/DAMT/${TRAIN_TYPE}_$SRC_MODEL_NAME\_$SRC\_$TGT
-OUT_DIR=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$SRC_DATA_NAME/${TRAIN_TYPE}_back_translate/$SRC_MODEL_NAME
+OUT_DIR=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$SRC_DATA_NAME/${TRAIN_TYPE}_forth_translate/$SRC_MODEL_NAME
 mkdir -p $OUT_DIR
 
 python -W ignore translate.py \
     --exp_name $SRC_MODEL_NAME\_$SRC\_to_$TGT \
-    --dump_path ./back_translate/ \
+    --dump_path ./forth_translate/ \
     --model_path $SRC_DIR/best-valid_$SRC-$TGT\_mt_bleu.pth \
     --src_data_path /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$SRC_DATA_NAME/processed/$ORDERED_SRC-$ORDERED_TGT/train.$ORDERED_SRC-$ORDERED_TGT.$SRC \
     --output_path_source $OUT_DIR/train.$ORDERED_SRC-$ORDERED_TGT.$SRC \
