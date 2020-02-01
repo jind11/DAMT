@@ -30,3 +30,19 @@ python results_retrieval.py [folder_name] de en
 Here ''folder_name'' means the folder name of the stored results. 
 
 Let me know if you have any questions.
+
+## Exp2: This experiment examins the self-training strategy
+Steps to run:
+
+1. Get data from the folder for the TED dataset: /data/medg/misc/jindi/nlp/datasets/OPUS/de-en/TED, and from this folder for the EMEA dataset: /data/medg/misc/jindi/nlp/datasets/OPUS/de-en/EMEA.
+
+2. Run the following commands:
+
+```
+./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name TED --train_type forth
+./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name TED --train_type forth_back
+./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name EMEA --train_type forth
+./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name EMEA --train_type forth_back
+```
+
+3. Retrieve results using the script abovementioned.
