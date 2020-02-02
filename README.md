@@ -36,15 +36,15 @@ Let me know if you have any questions.
 ## Exp2: This experiment examins the self-training strategy
 Steps to run:
 
-1. Get data from the folder for the TED dataset: /data/medg/misc/jindi/nlp/datasets/OPUS/de-en/TED, and from this folder for the EMEA dataset: /data/medg/misc/jindi/nlp/datasets/OPUS/de-en/EMEA.
+1. Get data from the folder for the TED dataset: /data/medg/misc/jindi/nlp/datasets/OPUS/de-en/TED, and from this folder for the EMEA dataset: /data/medg/misc/jindi/nlp/datasets/OPUS/de-en/EMEA (wait one day).
 
 2. Run the following commands:
 
 ```
 ./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name TED --train_type forth
 ./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name TED --train_type forth_back
-./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name EMEA --train_type forth
-./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name EMEA --train_type forth_back
+./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name EMEA --train_type forth (wait one day)
+./train_de_en_OPUS_sup_back.sh --src de --tgt en --src_data_name WMT14 --tgt_data_name EMEA --train_type forth_back (wait one day)
 ```
 
 3. Retrieve results using the script abovementioned.
