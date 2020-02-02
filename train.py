@@ -177,6 +177,8 @@ def get_parser():
                         help="Back-translation steps")
     parser.add_argument("--pc_steps", type=str, default="",
                         help="Parallel classification steps")
+    parser.add_argument("--delay_umt_epoch_num", type=int, default=0,
+                        help="The number of epochs to delay the umt steps")
 
     # reload pretrained embeddings / pretrained model / checkpoint
     parser.add_argument("--reload_emb", type=str, default="",
@@ -257,7 +259,7 @@ def main(params):
     set_sampling_probs(data, params)
 
     # language model training
-    for _ in range(params.max_epoch):
+    for epoch in range(params.max_epoch):
 
         logger.info("============ Starting epoch %i ... ============" % trainer.epoch)
 
@@ -266,28 +268,32 @@ def main(params):
         while trainer.n_sentences < trainer.epoch_size:
 
             # CLM steps
-            for lang1, lang2 in shuf_order(params.clm_steps, params):
-                trainer.clm_step(lang1, lang2, params.lambda_clm)
+            if epoch >= params.delay_umt_epoch_num:
+                for lang1, lang2 in shuf_order(params.clm_steps, params):
+                    trainer.clm_step(lang1, lang2, params.lambda_clm)
 
             # MLM steps (also includes TLM if lang2 is not None)
-            for lang1, lang2 in shuf_order(params.mlm_steps, params):
-                trainer.mlm_step(lang1, lang2, params.lambda_mlm)
+            if epoch >= params.delay_umt_epoch_num:
+                for lang1, lang2 in shuf_order(params.mlm_steps, params):
+                    trainer.mlm_step(lang1, lang2, params.lambda_mlm)
 
             # parallel classification steps
             for lang1, lang2 in shuf_order(params.pc_steps, params):
                 trainer.pc_step(lang1, lang2, params.lambda_pc)
 
             # denoising auto-encoder steps
-            for lang in shuf_order(params.ae_steps):
-                trainer.mt_step(lang, lang, params.lambda_ae)
+            if epoch >= params.delay_umt_epoch_num:
+                for lang in shuf_order(params.ae_steps):
+                    trainer.mt_step(lang, lang, params.lambda_ae)
 
             # machine translation steps
             for lang1, lang2 in shuf_order(params.mt_steps, params):
                 trainer.mt_step(lang1, lang2, params.lambda_mt)
 
             # back-translation steps
-            for lang1, lang2, lang3 in shuf_order(params.bt_steps):
-                trainer.bt_step(lang1, lang2, lang3, params.lambda_bt)
+            if epoch >= params.delay_umt_epoch_num:
+                for lang1, lang2, lang3 in shuf_order(params.bt_steps):
+                    trainer.bt_step(lang1, lang2, lang3, params.lambda_bt)
 
             trainer.iter()
 
