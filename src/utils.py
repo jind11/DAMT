@@ -126,12 +126,17 @@ def to_cuda(*args):
     return [None if x is None else x.cuda() for x in args]
 
 
-def restore_segmentation(path):
+def restore_segmentation(path, bpe_type='fastBPE'):
     """
     Take a file segmented with BPE and restore it to its original segmentation.
     """
     assert os.path.isfile(path)
-    restore_cmd = "sed -i -r 's/(@@ )|(@@ ?$)//g' %s"
+    if bpe_type == 'fastBPE':
+        restore_cmd = "sed -i -r 's/(@@ )|(@@ ?$)//g' %s"
+    elif bpe_type == 'sentencepiece':
+        restore_cmd = u"sed -i -e 's/ //g' -e 's/^\u2581//g' -e 's/\u2581/ /g' %s"
+    else:
+        raise NotImplementedError
     subprocess.Popen(restore_cmd % path, shell=True).wait()
 
 

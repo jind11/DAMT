@@ -41,13 +41,16 @@ else
     ORDERED_TGT=$SRC
 fi
 
-epoch_size=$(cat /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$TGT_DATA_NAME/processed_subsample_${SAMPLE_SIZE}_merge_${SRC_DATA_NAME}/train.$ORDERED_SRC-$ORDERED_TGT.$SRC | wc -l)
+pretrained_model_dir=/home/ubuntu/proj/models
+data_dir=/home/ubuntu/proj/data/$ORDERED_SRC-$ORDERED_TGT
+
+epoch_size=$(cat ${data_dir}/$TGT_DATA_NAME/processed_subsample_${SAMPLE_SIZE}_merge_${SRC_DATA_NAME}/train.$ORDERED_SRC-$ORDERED_TGT.$SRC | wc -l)
 max_epoch_size=500000
 epoch_size=$((epoch_size>max_epoch_size ?  max_epoch_size : epoch_size))
 echo $epoch_size
 
-pretrained_model_dir=/data/medg/misc/jindi/nlp/model_results/DAMT
-data_dir=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT
+#pretrained_model_dir=/data/medg/misc/jindi/nlp/model_results/DAMT
+#data_dir=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT
 
 python -W ignore train.py \
     --exp_name semi_exp_semi_sup_part_sample_${SAMPLE_SIZE}_src_$SRC_DATA_NAME\_tgt_$TGT_DATA_NAME\_$SRC\_$TGT \

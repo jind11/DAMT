@@ -7,6 +7,7 @@
 
 from logging import getLogger
 import os
+import re
 import subprocess
 from collections import OrderedDict
 import numpy as np
@@ -184,8 +185,8 @@ class Evaluator(object):
                     f.write('\n'.join(lang2_txt) + '\n')
 
                 # restore original segmentation
-                restore_segmentation(lang1_path)
-                restore_segmentation(lang2_path)
+                restore_segmentation(lang1_path, bpe_type=params.bpe_type)
+                restore_segmentation(lang2_path, bpe_type=params.bpe_type)
 
     def mask_out(self, x, lengths, rng):
         """
@@ -516,12 +517,15 @@ class EncDecEvaluator(Evaluator):
             # export sentences to hypothesis file / restore BPE segmentation
             with open(hyp_path, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(hypothesis) + '\n')
-            restore_segmentation(hyp_path)
+            restore_segmentation(hyp_path, bpe_type=params.bpe_type)
 
             # evaluate BLEU score
             bleu = eval_moses_bleu(ref_path, hyp_path)
+            sacrebleu = eval_sacrebleu(ref_path, hyp_path)
             logger.info("BLEU %s %s : %f" % (hyp_path, ref_path, bleu))
+            logger.info("SacreBLEU %s %s : %f" % (hyp_path, ref_path, sacrebleu))
             scores['%s_%s-%s_mt_bleu' % (data_set, lang1, lang2)] = bleu
+            scores['%s_%s-%s_mt_sacrebleu' % (data_set, lang1, lang2)] = sacrebleu
 
 
 def convert_to_text(batch, lengths, dico, params):
@@ -563,3 +567,36 @@ def eval_moses_bleu(ref, hyp):
     else:
         logger.warning('Impossible to parse BLEU score! "%s"' % result)
         return -1
+
+
+def eval_sacrebleu(ref, hyp):
+    ref_lines = open(ref).readlines()
+    hyp_lines = open(hyp).readlines()
+    scorer = SacrebleuScorer()
+    for ref_line, hyp_line in zip(ref_lines, hyp_lines):
+        scorer.add_string(ref_line, hyp_line)
+    return float(re.findall("\d+\.\d+", str(scorer.result_string()))[0])
+
+class SacrebleuScorer(object):
+    def __init__(self):
+        import sacrebleu
+        self.sacrebleu = sacrebleu
+        self.reset()
+
+    def reset(self, one_init=False):
+        if one_init:
+            raise NotImplementedError
+        self.ref = []
+        self.sys = []
+
+    def add_string(self, ref, pred):
+        self.ref.append(ref)
+        self.sys.append(pred)
+
+    def score(self, order=4):
+        return self.result_string(order).score
+
+    def result_string(self, order=4):
+        if order != 4:
+            raise NotImplementedError
+        return self.sacrebleu.corpus_bleu(self.sys, [self.ref])

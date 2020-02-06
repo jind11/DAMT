@@ -35,13 +35,17 @@ else
     ORDERED_TGT=$SRC
 fi
 
-epoch_size=$(cat /data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT/$DATA_NAME/processed/$ORDERED_SRC-$ORDERED_TGT/train.$SRC | wc -l)
+pretrained_model_dir=/home/ubuntu/proj/models/XLM
+data_dir=/home/ubuntu/proj/data/$ORDERED_SRC-$ORDERED_TGT
+
+epoch_size=$(cat ${data_dir}/$DATA_NAME/processed/$ORDERED_SRC-$ORDERED_TGT/train.$SRC | wc -l)
 max_epoch_size=300000
 epoch_size=$((epoch_size>max_epoch_size ?  max_epoch_size : epoch_size))
 echo $epoch_size
 
-pretrained_model_dir=/data/medg/misc/jindi/nlp/embeddings/XLM
-data_dir=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT
+#pretrained_model_dir=/data/medg/misc/jindi/nlp/embeddings/XLM
+#data_dir=/data/medg/misc/jindi/nlp/datasets/OPUS/$ORDERED_SRC-$ORDERED_TGT
+
 
 python -W ignore train.py \
     --exp_name umt_$DATA_NAME\_$SRC\_$TGT \
