@@ -1,4 +1,4 @@
 certifi==2020.4.5.1
 future==0.18.2
-numpy==1.18.5
+numpy==1.22.0
 torch==1.2.0
